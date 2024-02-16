@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+SQLAlchemy  = '~=2.0.27'
+Alembic = '~=1.13.1'
+Asyncpg = '~=0.29.0'
+psycopg = '~=3.1.18'
+Pydantic-settings = '~=2.1.0'
+Pydantic = '~=2.6.1'
+
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

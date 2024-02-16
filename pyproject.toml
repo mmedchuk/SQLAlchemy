@@ -1,0 +1,61 @@
+[tool.flake8]
+line_length = 120
+
+
+[tool.black]
+target-version = ['py310']
+line-length = 120
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+                     # the root of the project
+)
+'''
+
+
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 120
+skip = '.venv,venv,env,migrations,trash'
+src_paths = ["app"]
+
+
+
+[tool.mypy]
+python_version = '3.10'
+plugins = [
+    'mypy_django_plugin.main',
+    'mypy_drf_plugin.main'
+]
+mypy_path = 'app'
+exclude = [
+'shared', 
+'migrations',
+'openapi'
+]
+follow_imports = 'silent'
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+namespace_packages = true
+
+[[tool.mypy.overrides]]
+module = ["rest_framework_simplejwt.*", "allauth.*", "celery.*"]
+ignore_missing_imports = true
+
