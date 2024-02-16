@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from config import settings
-from sqlalchemy import text
-import asyncio
+from sqlalchemy import text, MetaData
+from sqlalchemy.orm import DeclarativeBase
 
 
 async_engine = create_async_engine(
@@ -9,10 +9,9 @@ async_engine = create_async_engine(
     echo=True,
     )
 
-async def get_async_connect():
-    async with async_engine.connect() as conn:
-        res = await conn.execute(text("SELECT VERSION()"))
-        return res
+async_session_factory = async_sessionmaker(bind=async_engine)
 
+class Base(DeclarativeBase):
+    pass
 
-asyncio.run(get_async_connect())
+Base.metadata.create_all(async_engine)
