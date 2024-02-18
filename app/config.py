@@ -10,7 +10,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file='.env')
 
     @property
-    def get_DB_URL(self):
+    def get_sync_DB_URL(self):
+        return f'postgresql+psycopg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
+
+    @property
+    def get_async_DB_URL(self):
         return f'postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
     
     
