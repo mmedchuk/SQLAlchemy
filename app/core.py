@@ -1,41 +1,70 @@
-from sqlalchemy import text, insert
-from database import sync_engine, sync_session_factory, Base
-from models import WorkerOrm, ResumeOrm
+from pydantic import EmailStr
+from sqlalchemy import Table, MetaData, String, Integer, ForeignKey, Column, Text, insert
+from database import sync_engine
+
+metadata = MetaData()
 
 
+users = Table(
+    'users',
+    metadata,
+    Column('id', Integer, primary_key=True),
+    Column('name', String), 
+    Column('email', String, unique=True)
 
-def create_table():
-    Base.metadata.drop_all(sync_engine)
-    Base.metadata.create_all(sync_engine)
+)
 
+users_profiles = Table(
+    'users_profiles',
+    metadata,
+    Column('id', Integer, primary_key=True),
+    Column('user_id', Integer, ForeignKey(users.c.id, ondelete="CASCADE"), nullable=False),
+    Column('bio', Text)
+)
 
-create_table()
+roles = Table(
+    'roles',
+    metadata,
+    Column('id', Integer, primary_key=True),
+    Column('name', String())
+)
 
+user_roles = Table(
+    'user_roles',
+    metadata,
+    Column('user_id', Integer, primary_key=True),
+    Column('role_id', Integer, primary_key=True)
+)
 
-def insert_data():
-    with sync_session_factory() as conn:
-        worker_1 = WorkerOrm(name='Olha')
-        worker_2 = WorkerOrm(name='sv')
-        resume_1 = ResumeOrm(title='Senior Python', salary=1000, workload='parttime', worker_id=2)
-        resume_2 = ResumeOrm(title='Junior Python', salary=3000, workload='fulltime', worker_id=1)
-        conn.add_all([worker_1, worker_2])
-        conn.commit()
-        conn.add_all([resume_1, resume_2])
-        conn.commit()
-        
-insert_data()
+metadata.drop_all(sync_engine)
+metadata.create_all(sync_engine)
 
+user_data = [
+    {'name':'John', 'email': 'a@a.com'},
+    {'name':'Alex', 'email': 'c@a.com'},
+    {'name':'Sam', 'email': 'cd@a.com'}
+]
 
+users_bio = [
+    {'id':1, 'user_id':2, 'bio': 'i`m a frontend developer'},
+    {'id':2, 'user_id':3, 'bio': 'i`m a backend developer'},
+    {'id':3, 'user_id':1, 'bio': 'i`m a fullstack developer'}
 
+]
+roles_data = [
+    {'name': 'ADMIN'},
+    {'name': 'USER'}
+]
 
+user_roles_data = [
+    {'user_id': 1, 'role_id':1},
+    {'user_id': 2, 'role_id':1},
+    {'user_id': 3, 'role_id':2},
+]
 
-
-# def insert_data_ns():
-#     with sync_engine.connect() as conn:
-#         stmt = insert(workers_table).values([
-#             {"username": "olha"},
-#             {"username": "sv"}
-#         ])
-#         conn.execute(stmt)
-
-#         conn.commit()
+with sync_engine.connect() as conn:
+    conn.execute(insert(users), user_data)
+    conn.execute(insert(users_profiles), users_bio)
+    conn.execute(insert(roles), roles_data)
+    conn.execute(insert(user_roles), user_roles_data)
+    conn.commit()
