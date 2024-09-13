@@ -1,6 +1,7 @@
 from pydantic import EmailStr
 from sqlalchemy import Table, MetaData, String, Integer, ForeignKey, Column, Text, insert
 from database import sync_engine
+from input_data import *
 
 metadata = MetaData()
 
@@ -38,29 +39,6 @@ user_roles = Table(
 
 metadata.drop_all(sync_engine)
 metadata.create_all(sync_engine)
-
-user_data = [
-    {'name':'John', 'email': 'a@a.com'},
-    {'name':'Alex', 'email': 'c@a.com'},
-    {'name':'Sam', 'email': 'cd@a.com'}
-]
-
-users_bio = [
-    {'id':1, 'user_id':2, 'bio': 'i`m a frontend developer'},
-    {'id':2, 'user_id':3, 'bio': 'i`m a backend developer'},
-    {'id':3, 'user_id':1, 'bio': 'i`m a fullstack developer'}
-
-]
-roles_data = [
-    {'name': 'ADMIN'},
-    {'name': 'USER'}
-]
-
-user_roles_data = [
-    {'user_id': 1, 'role_id':1},
-    {'user_id': 2, 'role_id':1},
-    {'user_id': 3, 'role_id':2},
-]
 
 with sync_engine.connect() as conn:
     conn.execute(insert(users), user_data)
